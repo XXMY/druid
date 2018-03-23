@@ -61,6 +61,10 @@ public class StatViewServlet extends ResourceServlet {
         super("support/http/resources");
     }
 
+    protected StatViewServlet(String resourcePath){
+        super(resourcePath);
+    }
+
     public void init() throws ServletException {
         super.init();
 
@@ -141,11 +145,17 @@ public class StatViewServlet extends ResourceServlet {
      * @return the jmx返回的内容
      * @throws Exception the exception
      */
-    private String getJmxResult(MBeanServerConnection connetion, String url) throws Exception {
+    protected String getJmxResult(MBeanServerConnection connetion, String url) throws Exception {
         ObjectName name = new ObjectName(DruidStatService.MBEAN_NAME);
 
-        String result = (String) conn.invoke(name, "service", new String[] { url },
+        String result = null;
+        if(connetion != null)
+            result = (String) connetion.invoke(name, "service", new String[] { url },
                                              new String[] { String.class.getName() });
+        else
+            result = (String) conn.invoke(name, "service", new String[] { url },
+                    new String[] { String.class.getName() });
+
         return result;
     }
 

@@ -14,7 +14,7 @@
     	<div class="container">
           				<h3>
           					Stat Index
-          					<a href="basic.json" target="_blank" class="lang" langKey="ViewJSONAPI">View JSON API</a>
+          					<a href="javascript:druid.common.remoteRedirect('basic.json')" target="_blank" class="lang" langKey="ViewJSONAPI">View JSON API</a>
           				</h3>
 						<table id="dataTable" style="background-color: #fff" class="table table-bordered responsive-utilities">
 							<tr >
@@ -65,7 +65,7 @@
 					ajaxRequestForBasicInfo : function() {
 						$.ajax({
 							type: 'POST',
-							url: "basic.json",
+							url: druid.common.buildRemoteUrl("basic.json"),
 							success: function(data) {
 								$("#DruidVersion").text(data.Content.Version)
 								var driversList = data.Content.Drivers;

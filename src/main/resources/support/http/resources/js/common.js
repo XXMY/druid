@@ -4,7 +4,7 @@ druid.common = function () {
 	var statViewOrderBy = '';
 	var statViewOrderBy_old = '';
 	var statViewOrderType = 'asc';
-  var isOrderRequest = false;
+	var isOrderRequest = false;
 
 	// only one page for now
 	var sqlViewPage = 1;
@@ -15,7 +15,43 @@ druid.common = function () {
 			this.buildFooter();
 			druid.lang.init();
 		},
-		
+
+        getQueryParameter : function(paramName){
+            var result = window.location.search.substr(1).match('(^|&)'+paramName+'=([^&]*)(&|$)');
+            if (result != null) return decodeURIComponent(result[2]); return "";
+        },
+
+        buildRemoteUrl : function(source){
+		    var remoteInfo = druid.common.getSelectRemoteInfo();
+		    if('undefined' === typeof remoteInfo || remoteInfo === "")
+		        return source;
+		    if(source.includes('?')){
+		        if(source.substring(source.length-1) === '&')
+                    return source + "remote=" + druid.common.getSelectRemoteInfo();
+		        else
+                    return source + "&remote=" + druid.common.getSelectRemoteInfo();
+            }
+
+		    else
+                return source + "?remote=" + druid.common.getSelectRemoteInfo();
+        },
+
+        remoteRedirect : function(source){
+            var remoteName = druid.common.getSelectRemoteInfo();
+            if(remoteName == null || remoteName === "")
+                window.location.href=source;
+            else
+                window.location.href=source + "?remote=" + remoteName;
+        },
+
+        getSelectRemoteInfo : function(){
+            var selected = $("#remoteInfoSelect").val();
+            if('undefined' === typeof selected || '' === selected || null == selected)
+                return druid.common.getQueryParameter("remote");
+
+            return selected === "local" ? "" : selected;
+        },
+
 		buildHead : function(index) {
 			$.get('header.html',function(html) {
 				$(document.body).prepend(html);
@@ -43,7 +79,7 @@ druid.common = function () {
 			
 			$.ajax({
 				type: 'POST',
-				url: "reset-all.json",
+				url: druid.common.buildRemoteUrl("reset-all.json"),
 				success: function(data) {
 					if (data.ResultCode == 1) {
 						alert("already reset all stat");
@@ -60,7 +96,7 @@ druid.common = function () {
 
 			$.ajax({
 				type: 'POST',
-				url: "log-and-reset.json",
+				url: druid.common.buildRemoteUrl("log-and-reset.json"),
 				success: function(data) {
 					if (data.ResultCode == 1) {
 						alert("already reset all stat");
@@ -148,7 +184,7 @@ druid.common = function () {
 		ajaxRequestForBasicInfo : function() {
 			$.ajax({
 				type: 'POST',
-				url: druid.common.getAjaxUrl(druid.common.ajaxuri),
+				url: druid.common.buildRemoteUrl(druid.common.getAjaxUrl(druid.common.ajaxuri)),
 				success: function(data) {
 					druid.common.handleAjaxResult(data);
 				},

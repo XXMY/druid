@@ -62,7 +62,7 @@
     			ajaxRequestForBasicInfo : function() {
     				$.ajax({
     					type: 'POST',
-    					url: 'connectionInfo-' + datasourceId + '.json',
+    					url: druid.common.buildRemoteUrl('connectionInfo-' + datasourceId + '.json'),
     					success: function(data) {
     						druid.connectionInfo.handleAjaxResult(data);
     						druid.lang.trigger();

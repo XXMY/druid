@@ -4,14 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.alibaba</groupId>
     <artifactId>druid-spring-boot-starter</artifactId>
-    <version>1.1.9</version>
+    <version>1.1.9-preview_1-20180320</version>
     <packaging>jar</packaging>
     <name>druid-spring-boot-starter</name>
     <description>Spring Boot with Druid support,help you simplify Druid config in Spring Boot.</description>
     <url>https://github.com/alibaba/druid</url>
 
     <properties>
-        <druid.version>1.1.9</druid.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <druid.version>1.1.9-preview_1-20180320</druid.version>
         <spring-boot.version>2.0.0.RELEASE</spring-boot.version>
     </properties>
 

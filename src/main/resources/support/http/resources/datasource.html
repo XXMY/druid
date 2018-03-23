@@ -18,7 +18,7 @@
         		<div class="span12">
           				<h3>
           					DataSourceStat List
-          					<a href="datasource.json" target="_blank">View JSON API</a>
+          					<a href="javascript:druid.common.remoteRedirect('datasource.json')" target="_blank">View JSON API</a>
           				</h3>
           				<div class="alert alert-error clearfix" style="margin-bottom: 5px;width: 195px; padding: 2px 15px 2px 10px;">(*) property for user to setup</div>
         		</div>
@@ -28,13 +28,13 @@
 			{{~ it.Content :datasourceNow:i  }}
 			<ul class="nav nav-tabs" id="datasourceTab">
 					<li class="active">
-						<a href="datasource.html#dstab{{=datasourceNow.Identity}}">{{=datasourceNow.Name}}</a>
+						<a href="javascript:druid.common.remoteRedirect('datasource.html#dstab{{=datasourceNow.Identity}}')">{{=datasourceNow.Name}}</a>
 					</li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="dstab{{=datasourceNow.Identity}}">
 					<h4>
-						Basic Info For {{=datasourceNow.Name}}<a href="datasource-{{=datasourceNow.Identity}}.json" target="_blank"  >View JSON API</a>
+						Basic Info For {{=datasourceNow.Name}}<a href="javascript:druid.common.remoteRedirect('datasource-{{=datasourceNow.Identity}}.json')" target="_blank"  >View JSON API</a>
 					</h4>
 					<table class="table table-bordered" style="background-color: #fff">
 						<tbody>
@@ -351,31 +351,31 @@
 							<tr>
 									<td valign="top" class="td_lable"><span class="lang" langKey="ActiveConnectionStackTrace">ActiveConnection StackTrace</span></td>
 									<td>
-										<a href="activeConnectionStackTrace.html?datasourceId={{=datasourceNow.Identity}}">View</a>
+										<a href="javascript:druid.common.remoteRedirect('activeConnectionStackTrace.html?datasourceId={{=datasourceNow.Identity}}')">View</a>
 									</td>
 									<td>
 										StackTrace for active Connection.
-										<a href="activeConnectionStackTrace-{{=datasourceNow.Identity}}.json" 	target="_blank">[View JSON API]</a>
+										<a href="javascript:druid.common.remoteRedirect('activeConnectionStackTrace-{{=datasourceNow.Identity}}.json')" target="_blank">[View JSON API]</a>
 									</td>
 								</tr>
 								<tr>
 									<td valign="top" class="td_lable"><span class="lang" langKey="PollingConnectionInfo">PollingConnection Info</span></td>
 									<td>
-										<a href="connectionInfo.html?datasourceId={{=datasourceNow.Identity}}">View</a>
+										<a href="javascript:druid.common.remoteRedirect('connectionInfo.html?datasourceId={{=datasourceNow.Identity}}')">View</a>
 									</td>
 									<td>
 										Info for polling connection. 
-										<a href="connectionInfo-{{=datasourceNow.Identity}}.json"	target="_blank">[View JSON API]</a>
+										<a href="javascript:druid.common.remoteRedirect('connectionInfo-{{=datasourceNow.Identity}}.json')"	target="_blank">[View JSON API]</a>
 									</td>
 								</tr>
 								<tr>
 									<td valign="top" class="td_lable"><span class="lang" langKey="SQLList">SQL List</span></td>
 									<td>
-										<a href="sql.html?dataSourceId={{=datasourceNow.Identity}}">View</a>
+										<a href="javascript:druid.common.remoteRedirect('sql.html?dataSourceId={{=datasourceNow.Identity}}')">View</a>
 									</td>
 									<td>
 										Info for SQL.
-										<a href="sql.json?dataSourceId={{=datasourceNow.Identity}}" 	target="_blank">[View JSON API]</a>
+										<a href="javascript:druid.common.remoteRedirect('sql.json?dataSourceId={{=datasourceNow.Identity}}')" target="_blank">[View JSON API]</a>
 									</td>
 								</tr>
 						</tbody>
@@ -397,7 +397,7 @@
 					ajaxRequestForBasicInfo : function() {
 						$.ajax({
 							type: 'POST',
-							url: "datasource.json",
+							url: druid.common.buildRemoteUrl("datasource.json"),
 							success: function(data) {
 
 								var tmpl = $('#datasource-tmpl').html();
