@@ -32,28 +32,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 多服务端状态监控Servlet，通过JMX方式进行监控
+ * 多服务端状态监控-监控端Servlet，通过JMX方式进行监控
  *
  * @author Fangwei Cai[cfw892@gmail.com]
  * @since 2018年3月19日 10点31分
  */
-public class MultiStatViewServlet extends StatViewServlet {
+public class MonitorStatViewServlet extends StatViewServlet {
     private final static Log LOG                     = LogFactory.getLog(StatViewServlet.class);
 
-    public MultiStatViewServlet() {
-       super("support/http/resources");
-    }
-
-    private Map<String,JmxConnectionProperties> jmxConnectionPropertiesMap;
+    private Map<String,ConnectionProperties> connectionPropertiesMap;
 
     private Map<String,MBeanServerConnection> managedBeanServerConnectionMap;
 
-    public Map<String,JmxConnectionProperties> getConnectionPropertiesMap() {
-        return jmxConnectionPropertiesMap;
+    public Map<String,ConnectionProperties> getConnectionPropertiesMap() {
+        return connectionPropertiesMap;
     }
 
-    public void setJmxConnectionPropertiesMap(Map<String,JmxConnectionProperties> jmxConnectionPropertiesMap) {
-        this.jmxConnectionPropertiesMap = jmxConnectionPropertiesMap;
+    public void setConnectionPropertiesMap(Map<String,ConnectionProperties> connectionPropertiesMap) {
+        this.connectionPropertiesMap = connectionPropertiesMap;
     }
 
     @Override
@@ -62,10 +58,10 @@ public class MultiStatViewServlet extends StatViewServlet {
 
         managedBeanServerConnectionMap = new HashMap<String, MBeanServerConnection>();
         // 获取jmx的连接配置信息
-        if (this.jmxConnectionPropertiesMap != null) {
-            Set<String> remoteNameSet = jmxConnectionPropertiesMap.keySet();
+        if (this.connectionPropertiesMap != null) {
+            Set<String> remoteNameSet = connectionPropertiesMap.keySet();
             for(String remoteName : remoteNameSet){
-                this.managedBeanServerConnectionMap.put(remoteName,this.initJmxConn(remoteName,this.jmxConnectionPropertiesMap.get(remoteName)));
+                this.managedBeanServerConnectionMap.put(remoteName,this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName)));
             }
         }
 
@@ -96,7 +92,7 @@ public class MultiStatViewServlet extends StatViewServlet {
 
     private String processLocal(String fullUrl){
         if (fullUrl.equals("/remote-info.json")) {
-            Set<String> remoteNameSet = this.jmxConnectionPropertiesMap.keySet();
+            Set<String> remoteNameSet = this.connectionPropertiesMap.keySet();
 
             return DruidStatService.returnJSONResult(DruidStatService.RESULT_CODE_SUCCESS, remoteNameSet);
         }
@@ -108,7 +104,7 @@ public class MultiStatViewServlet extends StatViewServlet {
         MBeanServerConnection connection = this.managedBeanServerConnectionMap.get(remoteName);
 
         if(connection == null){
-            connection = this.initJmxConn(remoteName,this.jmxConnectionPropertiesMap.get(remoteName));
+            connection = this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName));
             if(connection == null)
                 return DruidStatService.returnJSONResult(
                         DruidStatService.RESULT_CODE_ERROR,
@@ -179,7 +175,7 @@ public class MultiStatViewServlet extends StatViewServlet {
     /**
      * 初始化jmx连接
      */
-    private MBeanServerConnection initJmxConn(String remoteName,JmxConnectionProperties properties){
+    private MBeanServerConnection initJmxConn(String remoteName,ConnectionProperties properties){
         try {
             if (properties.getJmxUrl() != null) {
                 JMXServiceURL url = new JMXServiceURL(properties.getJmxUrl());

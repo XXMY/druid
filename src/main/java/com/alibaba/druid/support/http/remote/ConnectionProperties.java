@@ -21,7 +21,7 @@ package com.alibaba.druid.support.http.remote;
  * @author Fangwei Cai[cfw892@gmail.com]
  * @since 2018年3月19日 10点29分
  */
-public class JmxConnectionProperties {
+public class ConnectionProperties {
 
     private String jmxUrl;
     private String username;

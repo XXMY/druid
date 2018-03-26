@@ -15,35 +15,27 @@
  */
 package com.alibaba.druid.spring.boot.autoconfigure.properties;
 
-import com.alibaba.druid.support.http.remote.JmxConnectionProperties;
+import com.alibaba.druid.support.http.remote.ConnectionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
+ * Used by druid monitor to specify client properties.
  * @author Fangwei Cai[cfw892@gmail.com]
  * @since 2018.3.20 14:29
  */
-@ConfigurationProperties("spring.datasource.druid.multiConnection")
-public class DruidMultiConnectionProperties {
+@ConfigurationProperties("spring.datasource.druid.client")
+public class DruidClientConnectionProperties {
 
     // <Remote module name, Jmx connection property>
-    private Map<String,JmxConnectionProperties> properties;
+    private Map<String,ConnectionProperties> properties;
 
-    public Map<String, JmxConnectionProperties> getMultiConnection() {
+    public Map<String, ConnectionProperties> getProperties() {
         return properties;
     }
 
-    public void setMultiConnection(Map<String, JmxConnectionProperties> multiConnection) {
-        this.properties = multiConnection;
-    }
-
-    public Map<String, JmxConnectionProperties> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, JmxConnectionProperties> properties) {
+    public void setProperties(Map<String, ConnectionProperties> properties) {
         this.properties = properties;
     }
 }

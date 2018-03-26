@@ -61,10 +61,6 @@ public class StatViewServlet extends ResourceServlet {
         super("support/http/resources");
     }
 
-    protected StatViewServlet(String resourcePath){
-        super(resourcePath);
-    }
-
     public void init() throws ServletException {
         super.init();
 

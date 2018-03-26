@@ -19,10 +19,7 @@ import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidStatProperties;
-import com.alibaba.druid.spring.boot.autoconfigure.stat.DruidFilterConfiguration;
-import com.alibaba.druid.spring.boot.autoconfigure.stat.DruidSpringAopConfiguration;
-import com.alibaba.druid.spring.boot.autoconfigure.stat.DruidStatViewServletConfiguration;
-import com.alibaba.druid.spring.boot.autoconfigure.stat.DruidWebStatFilterConfiguration;
+import com.alibaba.druid.spring.boot.autoconfigure.stat.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +42,9 @@ import org.springframework.context.annotation.Import;
 @Import({DruidSpringAopConfiguration.class,
     DruidStatViewServletConfiguration.class,
     DruidWebStatFilterConfiguration.class,
-    DruidFilterConfiguration.class})
+    DruidFilterConfiguration.class,
+    DruidRemoteConfiguration.class
+})
 public class DruidDataSourceAutoConfigure {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DruidDataSourceAutoConfigure.class);
