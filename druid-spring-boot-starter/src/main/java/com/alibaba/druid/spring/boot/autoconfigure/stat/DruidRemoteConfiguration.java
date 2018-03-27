@@ -17,8 +17,8 @@ package com.alibaba.druid.spring.boot.autoconfigure.stat;
 
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidClientConnectionProperties;
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidMonitorConnectionProperties;
-import com.alibaba.druid.support.http.remote.ClientAutoReport;
 import com.alibaba.druid.stat.ClientConnectionHolder;
+import com.alibaba.druid.support.http.remote.ClientAutoReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

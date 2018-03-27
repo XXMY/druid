@@ -16,14 +16,11 @@
 package com.alibaba.druid.support.http.remote.condition;
 
 import com.alibaba.druid.support.http.StatViewServlet;
-import com.alibaba.druid.support.http.remote.MonitorStatViewServlet;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.util.Map;
 
 /**
  * 判断是否为监控端的条件

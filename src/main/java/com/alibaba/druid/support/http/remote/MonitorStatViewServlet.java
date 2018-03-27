@@ -20,7 +20,6 @@ import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;

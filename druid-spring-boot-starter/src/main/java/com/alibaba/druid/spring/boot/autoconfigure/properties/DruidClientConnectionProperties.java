@@ -18,7 +18,6 @@ package com.alibaba.druid.spring.boot.autoconfigure.properties;
 import com.alibaba.druid.support.http.remote.ConnectionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
