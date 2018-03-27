@@ -22,6 +22,7 @@ package com.alibaba.druid.support.http.remote;
  */
 public class MonitorConnectionProperties extends ConnectionProperties {
 
+    private static final long serialVersionUID = 2328386835758433800L;
     private boolean autoReport;
     private String myJmxUrl;
     private String myUsername;

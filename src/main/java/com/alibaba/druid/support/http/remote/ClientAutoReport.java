@@ -15,10 +15,11 @@
  */
 package com.alibaba.druid.support.http.remote;
 
+import com.alibaba.druid.stat.ClientConnectionHolder;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.druid.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.management.MBeanServerConnection;
@@ -29,6 +30,7 @@ import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 自动向监控服务器Monitor报告自己的 IP 和 JMX 端口
@@ -43,6 +45,9 @@ public class ClientAutoReport {
     private MonitorConnectionProperties connectionProperties;
 
     private MBeanServerConnection monitorJmxConnection;
+
+    @Value("${spring.application.name}")
+    private String applicationName = UUID.randomUUID().toString();
 
     public ClientAutoReport(MonitorConnectionProperties connectionProperties){
         this.connectionProperties = connectionProperties;
@@ -78,8 +83,8 @@ public class ClientAutoReport {
 
             ObjectName objectName = new ObjectName(ClientConnectionHolder.MBEAN_NAME);
             Boolean result = (Boolean)monitorJmxConnection.invoke(objectName, ClientConnectionHolder.MBEAN_METHOD,
-                    new ConnectionProperties[] { connectionProperties },
-                    new String[] { ConnectionProperties.class.getName() });
+                    new Object[] { this.applicationName, connectionProperties },
+                    new String[] { String.class.getName(), ConnectionProperties.class.getName() });
 
             LOG.info(String.format("Report to monitor result: %s",result));
 
@@ -115,7 +120,7 @@ public class ClientAutoReport {
             }
             JMXConnector jmxc = JMXConnectorFactory.connect(url, env);
             this.monitorJmxConnection = jmxc.getMBeanServerConnection();
-
+            return true;
         } catch (IOException e) {
             LOG.error("init jmx connection error", e);
         }

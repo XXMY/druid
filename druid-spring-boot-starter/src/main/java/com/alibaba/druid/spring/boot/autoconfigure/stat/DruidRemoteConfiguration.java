@@ -18,17 +18,20 @@ package com.alibaba.druid.spring.boot.autoconfigure.stat;
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidClientConnectionProperties;
 import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidMonitorConnectionProperties;
 import com.alibaba.druid.support.http.remote.ClientAutoReport;
-import com.alibaba.druid.support.http.remote.ClientConnectionHolder;
-import com.alibaba.druid.support.http.remote.condition.MonitorCondition;
+import com.alibaba.druid.stat.ClientConnectionHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Fangwei Cai[cfw892@gmail.com]
  * @since 2018年3月23日 16点45分
  */
+@Configuration
+@EnableConfigurationProperties({DruidClientConnectionProperties.class})
 public class DruidRemoteConfiguration {
 
     @Bean
@@ -46,13 +49,8 @@ public class DruidRemoteConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public DruidClientConnectionProperties clientConnectionProperties(){
-        return new DruidClientConnectionProperties();
-    }
-
-    @Bean
-    @ConditionalOnBean(MonitorCondition.class)
+    @ConditionalOnBean(name = {"monitorStatViewServlet"})
+    //@Conditional(MonitorCondition.class)
     @ConditionalOnMissingBean
     public ClientConnectionHolder clientConnectionHolder(DruidClientConnectionProperties clientConnectionProperties){
         return new ClientConnectionHolder(clientConnectionProperties.getProperties());

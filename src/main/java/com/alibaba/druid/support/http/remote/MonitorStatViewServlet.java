@@ -20,6 +20,7 @@ import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.dubbo.common.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -55,6 +56,9 @@ public class MonitorStatViewServlet extends StatViewServlet {
     @Override
     public void init() throws ServletException {
         super.init();
+
+        if(this.connectionPropertiesMap == null)
+            this.connectionPropertiesMap = new HashMap<String, ConnectionProperties>();
 
         managedBeanServerConnectionMap = new HashMap<String, MBeanServerConnection>();
         // 获取jmx的连接配置信息

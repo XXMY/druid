@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.support.http.remote;
+package com.alibaba.druid.stat;
 
+import com.alibaba.druid.support.http.remote.ConnectionProperties;
 import com.alibaba.druid.support.http.remote.condition.MonitorCondition;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.druid.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ import java.util.Map;
  * @since 2018年3月26日 14点21分
  */
 @Conditional(value = MonitorCondition.class)
-public class ClientConnectionHolder {
+public class ClientConnectionHolder implements ClientConnectionHolderMBean{
     private final static Log LOG = LogFactory.getLog(ClientConnectionHolder.class);
 
     public final static String MBEAN_NAME = "com.alibaba.druid:type=ClientConnectionHolder";
@@ -43,12 +44,15 @@ public class ClientConnectionHolder {
 
     private Map<String,ConnectionProperties> clientConnectionProperties;
 
-    @Autowired
     public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties){
         this.registerMBean();
-        this.clientConnectionProperties = clientConnectionProperties;
+        if(clientConnectionProperties == null)
+            this.clientConnectionProperties = new HashMap<String, ConnectionProperties>();
+        else
+            this.clientConnectionProperties = clientConnectionProperties;
     }
 
+    @Override
     public synchronized boolean put(String clientName, ConnectionProperties connectionProperties){
         if(StringUtils.isEmpty(clientName) || connectionProperties == null)
             return false;

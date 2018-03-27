@@ -13,30 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.spring.boot.autoconfigure.properties;
+package com.alibaba.druid.stat;
 
 import com.alibaba.druid.support.http.remote.ConnectionProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.io.Serializable;
-import java.util.Map;
 
 /**
- * Used by druid monitor to specify client properties.
+ * 通过JMX暴露此类，供客户端自动报告其连接属性
  * @author Fangwei Cai[cfw892@gmail.com]
- * @since 2018.3.20 14:29
+ * @since 2018年3月27日 14点50分
  */
-@ConfigurationProperties("spring.datasource.druid.client")
-public class DruidClientConnectionProperties {
+public interface ClientConnectionHolderMBean {
 
-    // <Remote module name, Jmx connection property>
-    private Map<String,ConnectionProperties> properties;
-
-    public Map<String, ConnectionProperties> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, ConnectionProperties> properties) {
-        this.properties = properties;
-    }
+    boolean put(String clientName, ConnectionProperties connectionProperties);
 }

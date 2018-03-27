@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure,\
+com.alibaba.druid.spring.boot.autoconfigure.stat.DruidMonitorStatViewServletConfiguration,\
+com.alibaba.druid.spring.boot.autoconfigure.stat.DruidRemoteConfiguration

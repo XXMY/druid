@@ -36,8 +36,9 @@ public class MonitorCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         try{
-            Map<String,MonitorStatViewServlet> beansOfType = context.getBeanFactory().getBeansOfType(MonitorStatViewServlet.class);
-            return beansOfType != null && beansOfType.size() > 0 ;
+            return context.getBeanFactory().containsBean("monitorStatViewServlet");
+            /*Map<String,MonitorStatViewServlet> beansOfType = context.getBeanFactory().getBeansOfType(MonitorStatViewServlet.class);
+            return beansOfType != null && beansOfType.size() > 0 ;*/
         }catch (Exception e){
             LOG.error(e.getMessage(),e);
         }

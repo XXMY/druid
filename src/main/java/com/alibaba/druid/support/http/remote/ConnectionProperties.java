@@ -15,14 +15,17 @@
  */
 package com.alibaba.druid.support.http.remote;
 
+import java.io.Serializable;
+
 /**
  * 多服务端监控JMX连接属性
  *
  * @author Fangwei Cai[cfw892@gmail.com]
  * @since 2018年3月19日 10点29分
  */
-public class ConnectionProperties {
+public class ConnectionProperties implements Serializable{
 
+    private static final long serialVersionUID = 3509478751129962004L;
     private String jmxUrl;
     private String username;
     private String password;

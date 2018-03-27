@@ -28,11 +28,18 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnWebApplication
 @ConditionalOnProperty(name = "spring.datasource.druid.stat-view-servlet.enabled", havingValue = "true", matchIfMissing = true)
 public class DruidStatViewServletConfiguration {
+
     @Bean
     public ServletRegistrationBean statViewServletRegistrationBean(DruidStatProperties properties) {
-        DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean();
         registrationBean.setServlet(new StatViewServlet());
+
+        this.configStatViewServlet(registrationBean,properties);
+        return registrationBean;
+    }
+
+    protected void configStatViewServlet(ServletRegistrationBean registrationBean, DruidStatProperties properties){
+        DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
         registrationBean.addUrlMappings(config.getUrlPattern() != null ? config.getUrlPattern() : "/druid/*");
         if (config.getAllow() != null) {
             registrationBean.addInitParameter("allow", config.getAllow());
@@ -49,6 +56,5 @@ public class DruidStatViewServletConfiguration {
         if (config.getResetEnable() != null) {
             registrationBean.addInitParameter("resetEnable", config.getResetEnable());
         }
-        return registrationBean;
     }
 }
