@@ -20,7 +20,6 @@ import com.alibaba.druid.support.http.remote.condition.MonitorCondition;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.druid.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 
 import javax.management.JMException;
@@ -29,6 +28,7 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * 通过JMX暴露此类，供客户端自动报告其连接属性
@@ -44,21 +44,62 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
 
     private Map<String,ConnectionProperties> clientConnectionProperties;
 
+    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+
+    private Map<String,Future> scheduledFutures = new HashMap<String, Future>();
+
     public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties){
         this.registerMBean();
         if(clientConnectionProperties == null)
             this.clientConnectionProperties = new HashMap<String, ConnectionProperties>();
         else
             this.clientConnectionProperties = clientConnectionProperties;
+
     }
 
     @Override
-    public synchronized boolean put(String clientName, ConnectionProperties connectionProperties){
+    public synchronized boolean put(final String clientName, ConnectionProperties connectionProperties){
         if(StringUtils.isEmpty(clientName) || connectionProperties == null)
             return false;
+        if(LOG.isDebugEnabled()){
+            LOG.debug(String.format("Received clientName: %s with properties: %s",clientName,connectionProperties.toString()));
+        }
 
         this.clientConnectionProperties.put(clientName,connectionProperties);
 
+        if(LOG.isDebugEnabled()){
+            LOG.debug(String.format("Size of clientConnectionProperties is %d, and contains %s",this.clientConnectionProperties.size(),this.clientConnectionProperties.keySet()));
+        }
+
+        // 若有对应的任务则先取消任务
+        if(scheduledFutures.containsKey(clientName)){
+            if(LOG.isDebugEnabled()){
+                LOG.debug(String.format("Preparing cancel %s and remove it from scheduledFutures.",clientName));
+            }
+
+            scheduledFutures.get(clientName).cancel(false);
+            scheduledFutures.remove(clientName);
+        }
+
+        // 向任务池中添加任务
+        ScheduledFuture future = executorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if(LOG.isDebugEnabled()){
+                    LOG.debug(String.format("Auto remove %s from clientConnectionProperties and scheduledFutures.",clientName));
+                }
+
+                clientConnectionProperties.remove(clientName);
+                scheduledFutures.remove(clientName);
+
+            }
+        },10, TimeUnit.MINUTES);
+
+        scheduledFutures.put(clientName,future);
+
+        if(LOG.isDebugEnabled()){
+            LOG.debug(String.format("Size of scheduledFutures is %d, and contains %s",this.scheduledFutures.size(),this.scheduledFutures.keySet()));
+        }
         return true;
     }
 
@@ -74,7 +115,4 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
             LOG.error("register mbean error", ex);
         }
     }
-
-
-
 }
