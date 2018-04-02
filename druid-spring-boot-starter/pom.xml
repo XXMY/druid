@@ -11,8 +11,9 @@
     <url>https://github.com/alibaba/druid</url>
 
     <properties>
-        <druid.version>1.1.3</druid.version>
+        <druid.version>1.1.3-multi</druid.version>
         <spring-boot.version>1.5.3.RELEASE</spring-boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <developers>
