@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2017 Alibaba Group Holding Ltd.
+ * Copyright 1999-2018 Alibaba Group Holding Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,18 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnWebApplication
 @ConditionalOnProperty(name = "spring.datasource.druid.stat-view-servlet.enabled", havingValue = "true", matchIfMissing = true)
 public class DruidStatViewServletConfiguration {
+
     @Bean
-    public ServletRegistrationBean servletRegistrationBean(DruidStatProperties properties) {
-        DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
+    public ServletRegistrationBean statViewServletRegistrationBean(DruidStatProperties properties) {
         ServletRegistrationBean registrationBean = new ServletRegistrationBean();
         registrationBean.setServlet(new StatViewServlet());
+
+        this.configStatViewServlet(registrationBean,properties);
+        return registrationBean;
+    }
+
+    protected void configStatViewServlet(ServletRegistrationBean registrationBean, DruidStatProperties properties){
+        DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
         registrationBean.addUrlMappings(config.getUrlPattern() != null ? config.getUrlPattern() : "/druid/*");
         if (config.getAllow() != null) {
             registrationBean.addInitParameter("allow", config.getAllow());
@@ -49,6 +56,5 @@ public class DruidStatViewServletConfiguration {
         if (config.getResetEnable() != null) {
             registrationBean.addInitParameter("resetEnable", config.getResetEnable());
         }
-        return registrationBean;
     }
 }
