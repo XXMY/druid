@@ -141,7 +141,7 @@ public class StatViewServlet extends ResourceServlet {
      * @return the jmx返回的内容
      * @throws Exception the exception
      */
-    private String getJmxResult(MBeanServerConnection connetion, String url) throws Exception {
+    protected String getJmxResult(MBeanServerConnection connetion, String url) throws Exception {
         ObjectName name = new ObjectName(DruidStatService.MBEAN_NAME);
 
         String result = (String) conn.invoke(name, "service", new String[] { url },
