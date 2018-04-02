@@ -113,7 +113,7 @@
     			ajaxRequestForBasicInfo : function() {
     				$.ajax({
     					type: 'POST',
-    					url: 'spring-detail.json?class=' + clazz + '&method=' + method,
+    					url: druid.common.buildRemoteUrl('spring-detail.json?class=' + clazz + '&method=' + method),
     					success: function(data) {
     						var stat = data.Content;
     						if (stat == null)

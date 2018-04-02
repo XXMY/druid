@@ -18,7 +18,7 @@
         		<div class="span12">
           				<h3>
           					WebAppStat List
-          					<a href="webapp.json" target="_blank">View JSON API</a>
+          					<a href="javascript:druid.common.remoteRedirect('webapp.json')" target="_blank">View JSON API</a>
           				</h3>
         		</div>
       		</div> 
@@ -27,7 +27,7 @@
 				{{~ it.content :contextNow:i  }}
 				<ul class="nav nav-tabs" id="datasourceTab{{=i}}">
 					<li class="active">
-						<a 	href="webapp.html#dstab/{{=contextNow.ContextPath}}">WebApp-{{=contextNow.ContextPath}}</a>
+						<a 	href="javascript:druid.common.remoteRedirect('webapp.html#dstab/{{=contextNow.ContextPath}}')">WebApp-{{=contextNow.ContextPath}}</a>
 					</li>
 				</ul>
 				<div class="tab-content">
@@ -58,7 +58,7 @@
 					ajaxRequestForBasicInfo : function() {
 						$.ajax({
 							type: 'POST',
-							url: "webapp.json",
+							url: druid.common.buildRemoteUrl("webapp.json"),
 							success: function(data) {
 								var datasourceList = data.Content;
 								

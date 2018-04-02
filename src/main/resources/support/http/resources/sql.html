@@ -17,7 +17,7 @@
         		<div class="span12">
           				<h3>
           					SQL Stat
-          					<a href="sql.json" target="_blank">View JSON API</a>
+          					<a href="javascript:druid.common.remoteRedirect('sql.json')" target="_blank">View JSON API</a>
           					<span class="pull-right" style="font-size: 16px; margin-right: 20px;">
           						<label langkey="RefreshPeriod" class="lang" style="display: inline;" for="refreshSecondsSelect">Refresh Period</label>
           						<select id="refreshSecondsSelect" class="refresh-seconds-select btn" style="width:80px;" onchange="javascript:druid.sql.refreshSeconds=parseInt(this.options[this.options.selectedIndex].value);">
@@ -147,13 +147,13 @@
 	    					var newRow = sqlStatTable.insertRow(-1);
 	    					html += "<tr>";
 	    					html += "<td>" + (i + 1) + "</td>";
-	    					html += "<td>" + '<a data-dismiss="alert"  title="'+newStatSQL+'" target="_blank" href="sql-detail.html?sqlId=' + stat.ID + '">' + druid.common.subSqlString(stat.SQL, 25) + '</a>' + "</td>";
+	    					html += "<td>" + '<a data-dismiss="alert"  title="'+newStatSQL+'" target="_blank" href="'+druid.common.buildRemoteUrl("sql-detail.html?sqlId="+stat.ID)+'">' + druid.common.subSqlString(stat.SQL, 25) + '</a>' + "</td>";
 	    					html += "<td>" + replace(stat.ExecuteCount) + "</td>";
 	    					html += "<td>" + replace(stat.TotalTime) + "</td>";
-	    					
+
 	    					var lastSlowHtml = stat.MaxTimespan;
 	    					if (stat.LastSlowParameters!=null && stat.LastSlowParameters.length>0) {
-	    						lastSlowHtml ='<a target="_blank" style="color:red" href="sql-detail.html?sqlId=' + stat.ID + '">'+stat.MaxTimespan+'</a>';
+	    						lastSlowHtml ='<a target="_blank" style="color:red" href="'+druid.common.buildRemoteUrl('sql-detail.html?sqlId='+ stat.ID)+'">'+stat.MaxTimespan+'</a>';
 	    					}
 	    					html += "<td>" + replace(lastSlowHtml) + "</td>";
 	    					html += "<td>" + replace(stat.InTransactionCount) + "</td>";
