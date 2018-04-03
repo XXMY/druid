@@ -189,7 +189,12 @@ public class MonitorStatViewServlet extends StatViewServlet {
                     env.put(JMXConnector.CREDENTIALS, credentials);
                 }
                 JMXConnector jmxc = JMXConnectorFactory.connect(url, env);
-                return jmxc.getMBeanServerConnection();
+                MBeanServerConnection connection = jmxc.getMBeanServerConnection();
+                if(connection != null){
+                    this.managedBeanServerConnectionMap.put(remoteName,connection);
+                    return connection;
+                }
+
             }
         } catch (IOException e) {
             LOG.error("init jmx connection error", e);
