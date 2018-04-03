@@ -144,8 +144,14 @@ public class StatViewServlet extends ResourceServlet {
     protected String getJmxResult(MBeanServerConnection connetion, String url) throws Exception {
         ObjectName name = new ObjectName(DruidStatService.MBEAN_NAME);
 
-        String result = (String) conn.invoke(name, "service", new String[] { url },
-                                             new String[] { String.class.getName() });
+        String result = null;
+        if(connetion != null)
+            result = (String) connetion.invoke(name, "service", new String[] { url },
+                    new String[] { String.class.getName() });
+        else
+            result = (String) conn.invoke(name, "service", new String[] { url },
+                    new String[] { String.class.getName() });
+
         return result;
     }
 
