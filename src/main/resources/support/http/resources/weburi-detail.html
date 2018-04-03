@@ -149,13 +149,13 @@
     			init : function() {
     				druid.common.buildHead(5);
     				this.ajaxRequestForBasicInfo();
-    				$("#viewJsonApi").attr("href", 'weburi-' + encodeURI(uri) + '.json');
+    				$("#viewJsonApi").attr("href", druid.common.buildRemoteUrl('weburi-' + encodeURI(uri) + '.json'));
     			},
     			
     			ajaxRequestForBasicInfo : function() {
     				$.ajax({
     					type: 'POST',
-    					url: 'weburi-' + encodeURI(uri) + '.json',
+    					url: druid.common.buildRemoteUrl('weburi-' + encodeURI(uri) + '.json'),
     					success: function(data) {
     						if (data.Content == null)
     							return;

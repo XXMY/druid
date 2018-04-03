@@ -126,13 +126,13 @@
     			init : function() {
     				druid.common.buildHead(2);
     				this.ajaxRequestForBasicInfo();
-    				$("#viewJsonApi").attr("href", 'sql-' + sqlId + '.json');
+    				$("#viewJsonApi").attr("href", druid.common.buildRemoteUrl('sql-' + sqlId + '.json'));
     			},
     			
     			ajaxRequestForBasicInfo : function() {
     				$.ajax({
     					type: 'POST',
-    					url: 'sql-' + sqlId + '.json',
+    					url: druid.common.buildRemoteUrl('sql-' + sqlId + '.json'),
     					success: function(data) {
     						var sqlInfo = data.Content;
     						if (sqlInfo == null)

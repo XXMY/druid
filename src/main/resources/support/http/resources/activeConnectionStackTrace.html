@@ -36,7 +36,7 @@
       ajaxRequestForActiveConnectionStackTrace : function() {
         $.ajax({
           type: 'POST',
-          url: 'activeConnectionStackTrace-' + datasourceId + '.json',
+          url: druid.common.buildRemoteUrl('activeConnectionStackTrace-' + datasourceId + '.json'),
           success: function(data) {
             var conntionStackTraceList = data.Content;
             if (conntionStackTraceList == null)

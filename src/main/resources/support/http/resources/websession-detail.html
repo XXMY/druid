@@ -118,13 +118,13 @@
     			init : function() {
     				druid.common.buildHead(6);
     				this.ajaxRequestForBasicInfo();
-    				$("#viewJsonApi").attr("href", 'websession-' + sessionId + '.json');
+    				$("#viewJsonApi").attr("href", druid.common.buildRemoteUrl('websession-' + sessionId + '.json'));
     			},
     			
     			ajaxRequestForBasicInfo : function() {
     				$.ajax({
     					type: 'POST',
-    					url: 'websession-' + sessionId + '.json',
+    					url: druid.common.buildRemoteUrl('websession-' + sessionId + '.json'),
     					success: function(data) {
     						if (data.Content == null)
     							return;
