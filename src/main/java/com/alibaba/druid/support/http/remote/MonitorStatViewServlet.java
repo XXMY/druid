@@ -19,7 +19,7 @@ import com.alibaba.druid.stat.DruidStatService;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
-import com.alibaba.dubbo.common.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
