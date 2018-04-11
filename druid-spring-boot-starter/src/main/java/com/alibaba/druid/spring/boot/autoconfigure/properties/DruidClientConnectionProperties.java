@@ -32,11 +32,21 @@ public class DruidClientConnectionProperties {
     // <Remote module name, Jmx connection property>
     private Map<String,ConnectionProperties> properties = new HashMap<>();
 
+    private int expireSeconds;
+
     public Map<String, ConnectionProperties> getProperties() {
         return properties;
     }
 
     public void setProperties(Map<String, ConnectionProperties> properties) {
         this.properties = properties;
+    }
+
+    public int getExpireSeconds() {
+        return expireSeconds;
+    }
+
+    public void setExpireSeconds(int expireSeconds) {
+        this.expireSeconds = expireSeconds;
     }
 }
