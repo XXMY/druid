@@ -43,17 +43,23 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
     public final static String MBEAN_METHOD = "put";
 
     private Map<String,ConnectionProperties> clientConnectionProperties;
+    private int expireSeconds;
 
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     private Map<String,Future> scheduledFutures = new HashMap<String, Future>();
 
-    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties){
+    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties,int expireSeconds){
         this.registerMBean();
         if(clientConnectionProperties == null)
             this.clientConnectionProperties = new HashMap<String, ConnectionProperties>();
         else
             this.clientConnectionProperties = clientConnectionProperties;
+
+        if(expireSeconds >= 0)
+            this.expireSeconds = expireSeconds;
+        else
+            this.expireSeconds = 300;
 
     }
 
@@ -93,7 +99,7 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
                 scheduledFutures.remove(clientName);
 
             }
-        },10, TimeUnit.MINUTES);
+        },this.expireSeconds, TimeUnit.SECONDS);
 
         scheduledFutures.put(clientName,future);
 
