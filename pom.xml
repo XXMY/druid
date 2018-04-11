@@ -18,6 +18,14 @@
 	<url>https://github.com/alibaba/druid</url>
 	<inceptionYear>2013</inceptionYear>
 
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Releases</name>
+			<url>http://47.97.195.246:8090/nexus/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
+
 	<properties>
 		<spring.version>4.2.5.RELEASE</spring.version>
 		<junit.version>4.12</junit.version>

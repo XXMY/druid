@@ -56,7 +56,7 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
         else
             this.clientConnectionProperties = clientConnectionProperties;
 
-        if(expireSeconds >= 0)
+        if(expireSeconds > 0)
             this.expireSeconds = expireSeconds;
         else
             this.expireSeconds = 300;
