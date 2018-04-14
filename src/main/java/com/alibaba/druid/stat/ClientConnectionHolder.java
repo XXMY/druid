@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Conditional;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,18 +44,17 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
     public final static String MBEAN_METHOD = "put";
 
     private Map<String,ConnectionProperties> clientConnectionProperties;
+    private Map<String,JMXConnector> clientConnectors;
     private int expireSeconds;
 
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     private Map<String,Future> scheduledFutures = new HashMap<String, Future>();
 
-    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties,int expireSeconds){
+    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties,Map<String,JMXConnector> clientConnectors,int expireSeconds){
         this.registerMBean();
-        if(clientConnectionProperties == null)
-            this.clientConnectionProperties = new HashMap<String, ConnectionProperties>();
-        else
-            this.clientConnectionProperties = clientConnectionProperties;
+        this.clientConnectionProperties = clientConnectionProperties;
+        this.clientConnectors = clientConnectors;
 
         if(expireSeconds > 0)
             this.expireSeconds = expireSeconds;
@@ -64,7 +64,7 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
     }
 
     @Override
-    public synchronized boolean put(final String clientName, ConnectionProperties connectionProperties){
+    public synchronized boolean put(final String clientName, final ConnectionProperties connectionProperties){
         if(StringUtils.isEmpty(clientName) || connectionProperties == null)
             return false;
         if(LOG.isDebugEnabled()){
@@ -77,31 +77,9 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
             LOG.debug(String.format("Size of clientConnectionProperties is %d, and contains %s",this.clientConnectionProperties.size(),this.clientConnectionProperties.keySet()));
         }
 
-        // 若有对应的任务则先取消任务
-        if(scheduledFutures.containsKey(clientName)){
-            if(LOG.isDebugEnabled()){
-                LOG.debug(String.format("Preparing cancel %s and remove it from scheduledFutures.",clientName));
-            }
+        cancelTask(clientName);
 
-            scheduledFutures.get(clientName).cancel(false);
-            scheduledFutures.remove(clientName);
-        }
-
-        // 向任务池中添加任务
-        ScheduledFuture future = executorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                if(LOG.isDebugEnabled()){
-                    LOG.debug(String.format("Auto remove %s from clientConnectionProperties and scheduledFutures.",clientName));
-                }
-
-                clientConnectionProperties.remove(clientName);
-                scheduledFutures.remove(clientName);
-
-            }
-        },this.expireSeconds, TimeUnit.SECONDS);
-
-        scheduledFutures.put(clientName,future);
+        newExpireTask(clientName);
 
         if(LOG.isDebugEnabled()){
             LOG.debug(String.format("Size of scheduledFutures is %d, and contains %s",this.scheduledFutures.size(),this.scheduledFutures.keySet()));
@@ -120,5 +98,47 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
         } catch (JMException ex) {
             LOG.error("register mbean error", ex);
         }
+    }
+
+    private void closeJmxConnection(String clientName){
+        try{
+            JMXConnector connector = clientConnectors.get(clientName);
+            if(connector != null)
+                connector.close();
+        }catch (Exception e){
+            LOG.error(String.format("Close connection of %s occurred an exception, %s",clientName,e.getMessage()),e);
+        }
+    }
+
+    private void cancelTask(String clientName){
+        // 若有对应的任务则先取消任务
+        if(scheduledFutures.containsKey(clientName)){
+            if(LOG.isDebugEnabled()){
+                LOG.debug(String.format("Preparing cancel %s and remove it from scheduledFutures.",clientName));
+            }
+            closeJmxConnection(clientName);
+            scheduledFutures.get(clientName).cancel(false);
+            scheduledFutures.remove(clientName);
+        }
+    }
+
+    private void newExpireTask(final String clientName){
+        // 向任务池中添加任务
+        ScheduledFuture future = executorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if(LOG.isDebugEnabled()){
+                    LOG.debug(String.format("Auto remove %s from clientConnectionProperties and scheduledFutures.",clientName));
+                }
+
+                closeJmxConnection(clientName);
+
+                clientConnectionProperties.remove(clientName);
+                scheduledFutures.remove(clientName);
+
+            }
+        },this.expireSeconds, TimeUnit.SECONDS);
+
+        scheduledFutures.put(clientName,future);
     }
 }

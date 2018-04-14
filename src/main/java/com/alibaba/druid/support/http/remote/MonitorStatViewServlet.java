@@ -41,8 +41,7 @@ public class MonitorStatViewServlet extends StatViewServlet {
     private final static Log LOG                     = LogFactory.getLog(StatViewServlet.class);
 
     private Map<String,ConnectionProperties> connectionPropertiesMap;
-
-    private Map<String,MBeanServerConnection> managedBeanServerConnectionMap;
+    private Map<String,JMXConnector> jmxConnectorMap;
 
     public Map<String,ConnectionProperties> getConnectionPropertiesMap() {
         return connectionPropertiesMap;
@@ -56,15 +55,11 @@ public class MonitorStatViewServlet extends StatViewServlet {
     public void init() throws ServletException {
         super.init();
 
-        if(this.connectionPropertiesMap == null)
-            this.connectionPropertiesMap = new HashMap<String, ConnectionProperties>();
-
-        managedBeanServerConnectionMap = new HashMap<String, MBeanServerConnection>();
         // 获取jmx的连接配置信息
         if (this.connectionPropertiesMap != null) {
             Set<String> remoteNameSet = connectionPropertiesMap.keySet();
             for(String remoteName : remoteNameSet){
-                this.managedBeanServerConnectionMap.put(remoteName,this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName)));
+                this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName));
             }
         }
 
@@ -104,19 +99,21 @@ public class MonitorStatViewServlet extends StatViewServlet {
     }
 
     private String processRemote(String remoteName,String fullUrl){
-        MBeanServerConnection connection = this.managedBeanServerConnectionMap.get(remoteName);
-
-        if(connection == null){
-            connection = this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName));
-            if(connection == null)
-                return DruidStatService.returnJSONResult(
-                        DruidStatService.RESULT_CODE_ERROR,
-                        "Cannot connect to remote service, initializing jmx connection failed."
-                        );
-        }
-
-        // JMX 连接建立成功
         try {
+            MBeanServerConnection connection = null;
+            JMXConnector connector = this.jmxConnectorMap.get(remoteName);
+            if(connector != null)
+                connection = connector.getMBeanServerConnection();
+
+            if(connection == null){
+                connection = this.initJmxConn(remoteName,this.connectionPropertiesMap.get(remoteName));
+                if(connection == null)
+                    return DruidStatService.returnJSONResult(
+                            DruidStatService.RESULT_CODE_ERROR,
+                            "Cannot connect to remote service, initializing jmx connection failed."
+                    );
+            }
+            // JMX 连接建立成功
             return super.getJmxResult(connection,fullUrl);
         } catch (Exception e) {
             LOG.error("get jmx data error", e);
@@ -189,12 +186,9 @@ public class MonitorStatViewServlet extends StatViewServlet {
                     env.put(JMXConnector.CREDENTIALS, credentials);
                 }
                 JMXConnector jmxc = JMXConnectorFactory.connect(url, env);
-                MBeanServerConnection connection = jmxc.getMBeanServerConnection();
-                if(connection != null){
-                    this.managedBeanServerConnectionMap.put(remoteName,connection);
-                    return connection;
-                }
+                this.jmxConnectorMap.put(remoteName,jmxc);
 
+                return jmxc.getMBeanServerConnection();
             }
         } catch (IOException e) {
             LOG.error("init jmx connection error", e);
