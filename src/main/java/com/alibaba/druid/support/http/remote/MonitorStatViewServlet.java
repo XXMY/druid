@@ -43,12 +43,12 @@ public class MonitorStatViewServlet extends StatViewServlet {
     private Map<String,ConnectionProperties> connectionPropertiesMap;
     private Map<String,JMXConnector> jmxConnectorMap;
 
-    public Map<String,ConnectionProperties> getConnectionPropertiesMap() {
-        return connectionPropertiesMap;
-    }
-
     public void setConnectionPropertiesMap(Map<String,ConnectionProperties> connectionPropertiesMap) {
         this.connectionPropertiesMap = connectionPropertiesMap;
+    }
+
+    public void setJmxConnectorMap(Map<String, JMXConnector> jmxConnectorMap) {
+        this.jmxConnectorMap = jmxConnectorMap;
     }
 
     @Override
