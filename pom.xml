@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.alibaba</groupId>
 	<artifactId>druid</artifactId>
-	<version>1.1.9-preview_1-20180324</version>
+	<version>1.1.9-preview_1-20180414</version>
 
 	<packaging>jar</packaging>
 	<name>druid</name>

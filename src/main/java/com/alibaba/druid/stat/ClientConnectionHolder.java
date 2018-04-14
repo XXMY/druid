@@ -24,7 +24,11 @@ import org.springframework.context.annotation.Conditional;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnectionNotification;
+import javax.management.remote.JMXConnector;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,18 +47,16 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
     public final static String MBEAN_METHOD = "put";
 
     private Map<String,ConnectionProperties> clientConnectionProperties;
+    private Map<String,JMXConnector> clientJmxConnectors;
 
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     private Map<String,Future> scheduledFutures = new HashMap<String, Future>();
 
-    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties){
+    public ClientConnectionHolder(Map<String,ConnectionProperties> clientConnectionProperties,Map<String,JMXConnector> clientJmxConnectors){
         this.registerMBean();
-        if(clientConnectionProperties == null)
-            this.clientConnectionProperties = new HashMap<String, ConnectionProperties>();
-        else
-            this.clientConnectionProperties = clientConnectionProperties;
-
+        this.clientConnectionProperties = clientConnectionProperties;
+        this.clientJmxConnectors = clientJmxConnectors;
     }
 
     @Override
@@ -88,7 +90,11 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
                 if(LOG.isDebugEnabled()){
                     LOG.debug(String.format("Auto remove %s from clientConnectionProperties and scheduledFutures.",clientName));
                 }
-
+                try {
+                    clientJmxConnectors.get(clientName).close();
+                } catch (IOException e) {
+                    LOG.error(String.format("Close jmx connection with %s occurred an exception, %s",clientName,e.getMessage()),e);
+                }
                 clientConnectionProperties.remove(clientName);
                 scheduledFutures.remove(clientName);
 

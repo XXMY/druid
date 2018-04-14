@@ -53,7 +53,7 @@ public class DruidRemoteConfiguration {
     //@Conditional(MonitorCondition.class)
     @ConditionalOnMissingBean
     public ClientConnectionHolder clientConnectionHolder(DruidClientConnectionProperties clientConnectionProperties){
-        return new ClientConnectionHolder(clientConnectionProperties.getProperties());
+        return new ClientConnectionHolder(clientConnectionProperties.getProperties(),clientConnectionProperties.getJmxConnectorMap());
     }
 
 }

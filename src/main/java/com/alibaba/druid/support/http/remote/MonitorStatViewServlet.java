@@ -44,12 +44,14 @@ public class MonitorStatViewServlet extends StatViewServlet {
 
     private Map<String,MBeanServerConnection> managedBeanServerConnectionMap;
 
-    public Map<String,ConnectionProperties> getConnectionPropertiesMap() {
-        return connectionPropertiesMap;
-    }
+    private Map<String,JMXConnector> jmxConnectorMap;
 
     public void setConnectionPropertiesMap(Map<String,ConnectionProperties> connectionPropertiesMap) {
         this.connectionPropertiesMap = connectionPropertiesMap;
+    }
+
+    public void setJmxConnectorMap(Map<String, JMXConnector> jmxConnectorMap) {
+        this.jmxConnectorMap = jmxConnectorMap;
     }
 
     @Override
@@ -189,7 +191,11 @@ public class MonitorStatViewServlet extends StatViewServlet {
                     env.put(JMXConnector.CREDENTIALS, credentials);
                 }
                 JMXConnector jmxc = JMXConnectorFactory.connect(url, env);
-                return jmxc.getMBeanServerConnection();
+                this.jmxConnectorMap.put(remoteName,jmxc);
+                MBeanServerConnection connection = jmxc.getMBeanServerConnection();
+                this.managedBeanServerConnectionMap.put(remoteName,connection);
+
+                return connection;
             }
         } catch (IOException e) {
             LOG.error("init jmx connection error", e);

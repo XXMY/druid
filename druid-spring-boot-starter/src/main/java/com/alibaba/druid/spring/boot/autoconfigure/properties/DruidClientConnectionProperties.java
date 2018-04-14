@@ -18,6 +18,7 @@ package com.alibaba.druid.spring.boot.autoconfigure.properties;
 import com.alibaba.druid.support.http.remote.ConnectionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import javax.management.remote.JMXConnector;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +33,17 @@ public class DruidClientConnectionProperties {
     // <Remote module name, Jmx connection property>
     private Map<String,ConnectionProperties> properties = new HashMap<>();
 
+    private Map<String,JMXConnector> jmxConnectorMap = new HashMap<>();
+
     public Map<String, ConnectionProperties> getProperties() {
         return properties;
     }
 
     public void setProperties(Map<String, ConnectionProperties> properties) {
         this.properties = properties;
+    }
+
+    public Map<String, JMXConnector> getJmxConnectorMap() {
+        return jmxConnectorMap;
     }
 }

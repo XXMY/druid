@@ -21,6 +21,7 @@ public class DruidMonitorStatViewServletConfiguration extends DruidStatViewServl
         ServletRegistrationBean registrationBean = new ServletRegistrationBean();
         MonitorStatViewServlet monitorStatViewServlet = new MonitorStatViewServlet();
         monitorStatViewServlet.setConnectionPropertiesMap(clientConnectionProperties.getProperties());
+        monitorStatViewServlet.setJmxConnectorMap(clientConnectionProperties.getJmxConnectorMap());
 
         registrationBean.setServlet(monitorStatViewServlet);
 
