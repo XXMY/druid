@@ -117,6 +117,7 @@ public class MonitorStatViewServlet extends StatViewServlet {
             return super.getJmxResult(connection,fullUrl);
         } catch (Exception e) {
             LOG.error("get jmx data error", e);
+            this.jmxConnectorMap.remove(remoteName);
             return DruidStatService.returnJSONResult(DruidStatService.RESULT_CODE_ERROR,
                     "get data error" + e.getMessage());
         }

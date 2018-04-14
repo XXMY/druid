@@ -44,7 +44,7 @@ public class ClientAutoReport {
 
     private MonitorConnectionProperties connectionProperties;
 
-    private MBeanServerConnection monitorJmxConnection;
+    private JMXConnector jmxConnector;
 
     @Value("${spring.application.name}")
     private String applicationName = UUID.randomUUID().toString();
@@ -55,7 +55,7 @@ public class ClientAutoReport {
 
     @Scheduled(cron = "${spring.datasource.druid.monitor.properties.cron}")
     public void doReport(){
-        if(!this.initJmxConnection())
+        if(this.initJmxConnection() == null)
             return ;
 
         this.reportToMonitor();
@@ -82,7 +82,8 @@ public class ClientAutoReport {
             connectionProperties.setPassword(this.connectionProperties.getMyPassword());
 
             ObjectName objectName = new ObjectName(ClientConnectionHolder.MBEAN_NAME);
-            Boolean result = (Boolean)monitorJmxConnection.invoke(objectName, ClientConnectionHolder.MBEAN_METHOD,
+            MBeanServerConnection connection = this.initJmxConnection();
+            Boolean result = (Boolean)connection.invoke(objectName, ClientConnectionHolder.MBEAN_METHOD,
                     new Object[] { this.applicationName, connectionProperties },
                     new String[] { String.class.getName(), ConnectionProperties.class.getName() });
 
@@ -90,6 +91,12 @@ public class ClientAutoReport {
 
         }catch (Exception e){
             LOG.error(e.getMessage(),e);
+            try {
+                this.jmxConnector.close();
+            } catch (IOException e1) {
+                LOG.error(e1.getMessage(),e1);
+            }
+            this.jmxConnector = null;
         }
     }
 
@@ -97,20 +104,21 @@ public class ClientAutoReport {
      * 初始化远程JMX连接
      * @return Boolean
      */
-    private boolean initJmxConnection(){
-        if(this.monitorJmxConnection != null){
-            if(LOG.isDebugEnabled())
-                LOG.debug("Connected to monitor with jmx: " + this.connectionProperties.getJmxUrl());
-
-            return true;
-        }
-
-        if(StringUtils.isEmpty(this.connectionProperties.getJmxUrl())){
-            LOG.warn("Remote monitor jmx url is empty");
-            return false;
-        }
-
+    private MBeanServerConnection initJmxConnection(){
         try {
+            if(this.jmxConnector != null){
+                if(LOG.isDebugEnabled())
+                    LOG.debug("Connected to monitor with jmx: " + this.connectionProperties.getJmxUrl());
+
+                return this.jmxConnector.getMBeanServerConnection();
+            }
+
+            if(StringUtils.isEmpty(this.connectionProperties.getJmxUrl())){
+                LOG.warn("Remote monitor jmx url is empty");
+                return null;
+            }
+
+
             JMXServiceURL url = new JMXServiceURL(this.connectionProperties.getJmxUrl());
             Map<String, String[]> env = null;
             if (this.connectionProperties.getUsername() != null) {
@@ -118,14 +126,14 @@ public class ClientAutoReport {
                 String[] credentials = new String[] { this.connectionProperties.getUsername(), this.connectionProperties.getPassword()};
                 env.put(JMXConnector.CREDENTIALS, credentials);
             }
-            JMXConnector jmxc = JMXConnectorFactory.connect(url, env);
-            this.monitorJmxConnection = jmxc.getMBeanServerConnection();
-            return true;
+            this.jmxConnector = JMXConnectorFactory.connect(url, env);
+            return this.jmxConnector.getMBeanServerConnection();
+
         } catch (IOException e) {
             LOG.error("init jmx connection error", e);
         }
 
-        return false;
+        return null;
 
     }
 

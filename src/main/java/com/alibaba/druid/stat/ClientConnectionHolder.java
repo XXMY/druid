@@ -26,6 +26,7 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
+import javax.management.remote.rmi.RMIConnector;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,12 +103,14 @@ public class ClientConnectionHolder implements ClientConnectionHolderMBean{
 
     private void closeJmxConnection(String clientName){
         try{
-            JMXConnector connector = clientConnectors.get(clientName);
+            RMIConnector connector = (RMIConnector) clientConnectors.get(clientName);
             if(connector != null)
                 connector.close();
         }catch (Exception e){
-            LOG.error(String.format("Close connection of %s occurred an exception, %s",clientName,e.getMessage()),e);
+            LOG.error(String.format("Close connection of %s occurred an exception, %s",clientName,e.getMessage()));
         }
+
+        clientConnectors.remove(clientName);
     }
 
     private void cancelTask(String clientName){
