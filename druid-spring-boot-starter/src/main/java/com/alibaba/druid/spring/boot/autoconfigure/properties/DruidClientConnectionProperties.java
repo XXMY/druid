@@ -18,6 +18,7 @@ package com.alibaba.druid.spring.boot.autoconfigure.properties;
 import com.alibaba.druid.support.http.remote.ConnectionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import javax.management.remote.JMXConnector;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ public class DruidClientConnectionProperties {
 
     // <Remote module name, Jmx connection property>
     private Map<String,ConnectionProperties> properties = new HashMap<>();
+
+    private Map<String,JMXConnector> jmxConnectors = new HashMap<>();
 
     private int expireSeconds;
 
@@ -48,5 +51,9 @@ public class DruidClientConnectionProperties {
 
     public void setExpireSeconds(int expireSeconds) {
         this.expireSeconds = expireSeconds;
+    }
+
+    public Map<String, JMXConnector> getJmxConnectors() {
+        return jmxConnectors;
     }
 }
